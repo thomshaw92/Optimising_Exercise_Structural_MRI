@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -N ashs_ses-12
+
+#PBS -A UQ-CAI
+
+#PBS -l select=1:ncpus=8:mem=32GB:vmem=32GB,walltime=08:00:00
+
+#PBS -V 
+
+#Now do some things
+
+source ~/.bashrc 
+
+~/scripts/OPTIMEX/7_ashs/ashs_script_ses-12.sh $SUBJNAME
+
+  

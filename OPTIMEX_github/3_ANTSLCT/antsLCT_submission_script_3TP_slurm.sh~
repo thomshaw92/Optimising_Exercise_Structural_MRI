@@ -1,0 +1,4 @@
+#!/bin/bash
+for subjName in `cat /30days/$USER/subjnames_ses-12.csv` ; do 
+	qsub -v SUBJNAME=$subjName ~/scripts/OPTIMEX/3_ANTSLCT/antsLCT_pbs_script_3TP.pbs
+done
