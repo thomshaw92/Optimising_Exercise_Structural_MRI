@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# 
+
+#PBS -A UQ-CAI
+
+#PBS -l select=1:ncpus=16:mem=64GB:vmem=64GB,walltime=23:00:00
+
+#PBS -N lashis_3tp_optimex
+
+#PBS -V 
+
+#PBS -J 1-49:1
+
+#set -x
+
+cd $PBS_O_WORKDIR
+
+# get the parameter combination at line PBS_ARRAY_INDEX in parameters.txt
+SUBJNAME=`sed "${PBS_ARRAY_INDEX}q;d" ~/scripts/OPTIMEX_github/subjnames_all_12.csv`
+cp /RDS/Q0535/optimex/data/derivatives/preprocessing/${SUBJNAME}.tar.gz $TMPDIR
+cd $TMPDIR
+tar xvzf ${SUBJNAME}.tar.gz
+module load singularity/2.5.2
+#where the script lives
+LASHiS_dir=/home/uqtshaw/LASHiS/
+#where the data lives
+out_dir=/30days/uqtshaw/OPTIMEX/derivatives/LASHiS/
+mkdir ${out_dir}
+#the simg path
+singularity_image_path=/90days/uqtshaw/adni_lashis_simg_20191127.simg
+#singularity including bind points
+singularity="singularity exec --bind $TMPDIR:/TMPDIR --pwd /TMPDIR/ --bind /RDS/:/RDS  ${singularity_image_path}"
+cd $TMPDIR
+#Do LASHiS and Diet
+${singularity} ${LASHiS_dir}/LASHiS.sh \
+    -a /ashsT1_atlas_upennpmc_07202018/ \
+    -c 2 \
+    -j 16 \
+    -o /TMPDIR/${SUBJNAME}_2_ses_ \
+    /TMPDIR/${SUBJNAME}_ses-01_T1w_N4corrected_norm_preproc.nii.gz /TMPDIR/${SUBJNAME}_ses-01_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz \
+    /TMPDIR/${SUBJNAME}_ses-06_T1w_N4corrected_norm_preproc.nii.gz /TMPDIR/${SUBJNAME}_ses-06_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz \
+    /TMPDIR/${SUBJNAME}_ses-12_T1w_N4corrected_norm_preproc.nii.gz /TMPDIR/${SUBJNAME}_ses-12_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz 
+
+${singularity} ${LASHiS_dir}/LASHiS.sh \
+    -a /ashsT1_atlas_upennpmc_07202018 \
+    -c 2 \
+    -j 16 \
+    -f 1 \
+    -o /TMPDIR/${SUBJNAME}_2_ses_ \
+    /TMPDIR/${SUBJNAME}_ses-01_T1w_N4corrected_norm_preproc.nii.gz /TMPDIR/${SUBJNAME}_ses-01_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz \
+    /TMPDIR/${SUBJNAME}_ses-06_T1w_N4corrected_norm_preproc.nii.gz /TMPDIR/${SUBJNAME}_ses-06_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz \
+    /TMPDIR/${SUBJNAME}_ses-12_T1w_N4corrected_norm_preproc.nii.gz /TMPDIR/${SUBJNAME}_ses-12_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz
+
+rsync -rv $TMPDIR/* ${out_dir} 
