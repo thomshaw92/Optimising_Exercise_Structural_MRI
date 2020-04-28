@@ -1,11 +1,9 @@
 #!/bin/bash
-#PBS -N pp_pbs_script_ses-12
+#PBS -N pp_pbs_script_ses-01
 
 #PBS -A UQ-CAI
 
 #PBS -l select=1:ncpus=4:mem=16GB:vmem=16GB,walltime=08:00:00
-
-#PBS -N tsepp
 
 #PBS -V 
 
@@ -13,6 +11,6 @@
 
 source ~/.bashrc 
 
-~/scripts/OPTIMEX/1_preprocessing/pp_script_ses-12.sh $SUBJNAME $TMPDIR
+~/scripts/OPTIMEX/1_preprocessing/pp_script_ses-01.sh $SUBJNAME $TMPDIR
 
   
