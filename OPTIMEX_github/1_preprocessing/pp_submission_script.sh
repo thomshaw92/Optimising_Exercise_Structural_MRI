@@ -1,4 +1,5 @@
 #!/bin/bash
-for subjName in `cat /30days/$USER/subjnames_ses-01_redo.csv` ; do 
-	qsub -v SUBJNAME=$subjName ~/scripts/OPTIMEX/1_preprocessing/pp_pbs_script_ses-01.pbs
+github_dir=~/scripts/Optimising_Exercise_Structural_MRI/OPTIMEX_github/
+for subjName in `cat ${github_dir}/subjnames_all.csv` ; do 
+	qsub -v SUBJNAME=$subjName ${github_dir}/1_preprocessing/pp_pbs_script.pbs
 done

@@ -1,16 +1,16 @@
 #!/bin/bash
-#PBS -N pp_pbs_script_ses-01
+#PBS -N pp_pbs_script
 
 #PBS -A UQ-CAI
 
-#PBS -l select=1:ncpus=4:mem=16GB:vmem=16GB,walltime=08:00:00
+#PBS -l select=1:ncpus=4:mem=16GB:vmem=16GB,walltime=24:00:00
 
 #PBS -V 
 
 #Now do some things
 
 source ~/.bashrc 
-
-~/scripts/OPTIMEX/1_preprocessing/pp_script_ses-01.sh $SUBJNAME $TMPDIR
+github_dir=~/scripts/Optimising_Exercise_Structural_MRI/OPTIMEX_github/
+${github_dir}/1_preprocessing/pp_script.sh $SUBJNAME $TMPDIR
 
   
