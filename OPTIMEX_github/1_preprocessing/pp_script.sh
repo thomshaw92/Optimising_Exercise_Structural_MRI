@@ -27,16 +27,16 @@ for ss in ses-01 ses-02 ses-03 ses-04 ; do
 	tse2=$bidsdir/derivatives/preprocessing/$subjName/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-2_T2w.nii.gz
 	tse3=$bidsdir/derivatives/preprocessing/$subjName/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-3_T2w.nii.gz
 	deriv=$bidsdir/derivatives
-	if [[ ! e ${t1w} ]] ; then
+	if [[ ! -e ${t1w} ]] ; then
 		echo "Missing T1w for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
 	fi
-	if [[ ! e ${tse1} ]] ; then
+	if [[ ! -e ${tse1} ]] ; then
                 echo "Missing tse1 for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
         fi
-	if [[ ! e ${tse2} ]] ; then
+	if [[ ! -e ${tse2} ]] ; then
                 echo "Missing tse2 for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
         fi
-	if [[ ! e ${tse3} ]] ; then
+	if [[ ! -e ${tse3} ]] ; then
                 echo "Missing tse3 for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
         fi
 
