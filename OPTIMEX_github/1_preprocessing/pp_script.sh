@@ -27,16 +27,16 @@ for ss in ses-01 ses-02 ses-03 ses-04 ; do
 	tse2=$bidsdir/derivatives/preprocessing/$subjName/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-2_T2w.nii.gz
 	tse3=$bidsdir/derivatives/preprocessing/$subjName/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-3_T2w.nii.gz
 	deriv=$bidsdir/derivatives
-	if [[ ! -e ${t1w} ]] ; then
+	if [[ ! -e $TMPDIR/anat/${subjName}_${ss}_acq-mp2ragewip900075iso7TUNIDEN_run-1_T1w.nii.gz ]] ; then
 		echo "Missing T1w for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
 	fi
-	if [[ ! -e ${tse1} ]] ; then
+	if [[ ! -e  $TMPDIR/anat/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-1_T2w.nii.gz  ]] ; then
                 echo "Missing tse1 for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
         fi
-	if [[ ! -e ${tse2} ]] ; then
+	if [[ ! -e  $TMPDIR/anat/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-2_T2w.nii.gz ]] ; then
                 echo "Missing tse2 for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
         fi
-	if [[ ! -e ${tse3} ]] ; then
+	if [[ ! -e  $TMPDIR/anat/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-3_T2w.nii.gz  ]] ; then
                 echo "Missing tse3 for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
         fi
 
@@ -56,7 +56,7 @@ for ss in ses-01 ses-02 ses-03 ses-04 ; do
 	#skull strip new Bias corrected T1
 	$singularity runROBEX.sh $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_brain_preproc.nii.gz $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_brainmask.nii.gz
 	#remove things
-#	rm $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz
+	#rm $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz
 	rm $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T1w_brain_preproc.nii.gz
 	rm $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_preproc.nii.gz
 	rm $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_preproc.nii.gz
@@ -66,15 +66,15 @@ for ss in ses-01 ses-02 ses-03 ses-04 ; do
 	$singularity  antsApplyTransforms -d 3 -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_brainmask.nii.gz -r $tse1 -n NearestNeighbor -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-1_brainmask.nii.gz
 	 $singularity  antsApplyTransforms -d 3 -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_brainmask.nii.gz -r $tse2 -n NearestNeighbor -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-2_brainmask.nii.gz
 	 $singularity  antsApplyTransforms -d 3 -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_brainmask.nii.gz -r $tse3 -n NearestNeighbor -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-3_brainmask.nii.gz
-
 	#Bias correction - use mask created - 
 	for x in "1" "2" "3" ; do
 	    
 	    #N4
 	    $singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i $bidsdir/derivatives/preprocessing/$subjName/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-${x}_T2w.nii.gz -x $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz -r 1 -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz --verbose 1 -s 2 
 	    if [[ ! -e $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz ]] ; then
-		echo "TSE run ${x} did not bias correct for ${subjName}_${ss} " >> ${data_dir}/preprocessing_error_log.txt
-            fi		
+		echo "TSE run ${x} did not bias correct for ${subjName}_${ss}, trying without mask " >> ${data_dir}/preprocessing_error_log.txt
+		$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i $bidsdir/derivatives/preprocessing/$subjName/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-${x}_T2w.nii.gz -r 1 -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz --verbose 1 -s 2
+	    fi		
 	    #normalise intensities of the BC'd tses
 	    $singularity ImageMath 3 $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz RescaleImage $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz 0 1000 
 
@@ -82,22 +82,25 @@ for ss in ses-01 ses-02 ses-03 ses-04 ; do
 	    $singularity flirt -v -applyisoxfm 0.3 -interp sinc -sincwidth 8 -in $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz -ref $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz -out $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz
 
 	    #create new brainmask and brain images. 
-	$singularity  antsApplyTransforms -d 3 -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_brainmask.nii.gz -r $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz -n NearestNeighbor -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz
+	    $singularity  antsApplyTransforms -d 3 -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_brainmask.nii.gz -r $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz -n NearestNeighbor -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz
 	    rm $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz 
-	
+
 	done
-
-
 	for x in "1" "2" "3" ; do
 	    #mask the preprocessed TSE.
 	    $singularity ImageMath 3 $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_brain_preproc.nii.gz m $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz  $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz
-
+	 if [[ ! -e $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_brain_preproc.nii.gz ]] ; then
+                        echo "${subjName}_${ss} TSE ${x} failed preprocessing" >> ${data_dir}/preprocessing_error_log.txt
+         fi
 	# rm brainmasks and other crap
 		chmod -R 744 $TMPDIR/
 		rm $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz
 		rm $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz
 		rm $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz
 	done
+	if [[ ! -e $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz ]] ; then
+                echo  "${subjName}_${ss} T1w failed preprocessing" >> ${data_dir}/preprocessing_error_log.txt
+	fi
 
 	#move back out of TMPDIR... need to delete all the crap (from RDS - the raw files are still included, need to sort this)
 	cd $TMPDIR/derivatives/preprocessing/
