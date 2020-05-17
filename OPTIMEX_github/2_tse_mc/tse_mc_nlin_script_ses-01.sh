@@ -12,21 +12,20 @@ done
 cd $TMPDIR/$subjName
 chmod +rwx $TMPDIR/$subjName/*
 #nlin TSE MC
-$singularity ls
-
+for ss in ses-01 ses-2 ses-03 ses-04 ses-05 ; do
+if [[ -e ${something something ses} ]] ; then
 #nlin TSE MC
 $singularity antsMultivariateTemplateConstruction.sh -d '3' -b '0' -c '2' -j '4' -i '2' -k '1' -t SyN -m '50x80x20' -s CC -t GR -n '0' -r '0' -g '0.2' -o ${subjName}_${ss}_T2w_nlinMoCo_res-iso.3_N4corrected_brain_ ${subjName}_ses-01_T2w_run-*_res-iso.3_N4corrected_norm_brain_preproc.nii.gz
 
-#FIXME#move file to correct name
-mv $TMPDIR/${subjName}/${subjName}_${ss}_T2w_nlinMoCo_res-iso.3_N4corrected_brain_template0.nii.gz $TMPDIR/${subjName}/${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_brain_preproc.nii.gz
+cp $TMPDIR/${subjName}/${subjName}_${ss}_T2w_nlinMoCo_res-iso.3_N4corrected_brain_template0.nii.gz $TMPDIR/${subjName}/${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_brain_preproc.nii.gz
 
-$singularity DenoiseImage -d 3 -n Rician -i ${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_brain_preproc.nii.gz -o ${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz -v
+$singularity DenoiseImage -d 3 -n Rician -i $TMPDIR/${subjName}/${subjName}_${ss}_T2w_nlinMoCo_res-iso.3_N4corrected_brain_template0.nii.gz -o ${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz -v
 
-$singularity ~/scripts/niifti_normalise.sh -i ./${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz -o ./${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_norm_brain_preproc.nii.gz
+$singularity ImageMath 3 $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz RescaleImage $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz 0 1000
 
 #Check it exists
 if [[ ! -e $TMPDIR/${subjName}/${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_norm_brain_preproc.nii.gz ]] ; then echo "ERROR $subjName $ss template not created" >> /30days/$USER/error_list.txt
 fi
 rsync -v -c -r ${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_norm_brain_preproc.nii.gz /RDS/Q0535/optimex/data/derivatives/preprocessing/$subjName
 rsync -v -c -r ${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz /RDS/Q0535/optimex/data/derivatives/preprocessing/$subjName
-
+fi

@@ -1,7 +1,7 @@
 #!/bin/bash
-#Thomas Shaw 5/4/18 
-#skull strip t1/tse, bias correct, normalise, interpolate, then prepare for nlin MC (different script)
-#remove all tse_mean stuff - unnecesary
+#Thomas Shaw 5/4/18
+#and still working on it 18/5/2020 
+#skull strip t1/tse, bias correct, normalise, interpolate, then nlinMoco, and denoise
 subjName=$1
 source ~/.bashrc
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=4
@@ -101,7 +101,23 @@ for ss in ses-01 ses-02 ses-03 ses-04 ; do
 	if [[ ! -e $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz ]] ; then
                 echo  "${subjName}_${ss} T1w failed preprocessing" >> ${data_dir}/preprocessing_error_log.txt
 	fi
+	
 
+	#Non Linear Motion Correction
+	cd $TMPDIR/derivatives/preprocessing/$subjName
+	chmod +rwx $TMPDIR/*
+	$singularity antsMultivariateTemplateConstruction.sh -d '3' -b '0' -i '2' -k '1' -t SyN -m '50x80x20' -s CC -t GR -n '0' -r '1' -g '0.2' -c '2' -j '12' -o ${subjName}_${ss}_T2w_nlinMoCo_res-iso.3_N4corrected_brain_ $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_run-*_res-iso.3_N4corrected_norm_brain_preproc.nii.gz 
+	$singularity DenoiseImage -d 3 -n Rician -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_nlinMoCo_res-iso.3_N4corrected_brain_template0.nii.gz -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz -v
+	
+
+	#Denoise the T1w scans (w/ and w/o skull)
+	 $singularity DenoiseImage -d 3 -n Rician -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_brain_preproc.nii.gz -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_denoised_brain_preproc.nii.gz -v
+	$singularity DenoiseImage -d 3 -n Rician -i $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz -o $deriv/preprocessing/$subjName/${subjName}_${ss}_T1w_N4corrected_norm_denoised_preproc.nii.gz -v
+	
+
+	if [[ ! -e $TMPDIR/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz ]] ; then 
+		echo  "${subjName}_${ss} T2w failed NlinMoCo or denoising" >> ${data_dir}/preprocessing_error_log.txt
+	fi
 	#move back out of TMPDIR... need to delete all the crap (from RDS - the raw files are still included, need to sort this)
 	cd $TMPDIR/derivatives/preprocessing/
 	chmod -R 740 $TMPDIR/derivatives/preprocessing
@@ -111,5 +127,5 @@ for ss in ses-01 ses-02 ses-03 ses-04 ; do
 	rm  ${data_dir}/derivatives/preprocessing/$subjName/*_tse.nii.gz
 	rm  ${data_dir}/derivatives/preprocessing/$subjName/*T1w.nii.gz
 	echo "done PP for $subjName_${ss}"
-    fi
+    fi	
 done
