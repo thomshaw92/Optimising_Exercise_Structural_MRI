@@ -1,8 +1,8 @@
 #!/bin/bash
 #untar entire directory
 
-base_dir="/data/lfs2/uqtshaw/optimex_raw"
-
+base_dir="/30days/uqtshaw/optimex/raw_redos/final_checks"
+optimex_dir="/30days/uqtshaw/optimex/"
 cd $base_dir
 for x in sub-* ; do
     cd ${base_dir}/${x}
@@ -39,9 +39,9 @@ for x in sub-* ; do
 	rm -f *IMA
 	
     done #finish session loop
-    cd /data/lfs2/uqtshaw
+    cd ${optimex_dir}
     #run bidscoiner on that directory
-    bidscoiner ./optimex_raw ./optimex_bids -p ${x} -f
+    bidscoiner  ${base_dir} ./optimex_bids -p ${x} -f
     #tar the source data and move it to RDM
     tar cvzf ${base_dir}/${x}.tar.gz ${base_dir}/${x} && rm -rf ${base_dir}/${x} &
     
