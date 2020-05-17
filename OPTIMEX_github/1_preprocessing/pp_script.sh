@@ -9,7 +9,7 @@ export NSLOTS=4
 echo $TMPDIR
 raw_data_dir=/30days/${USER}/optimex/bids
 data_dir=/30days/$USER/optimex
-for ss in ses-01 ses-02 ses-03 ses-04 ; do
+for ss in ses-01 ses-02 ses-03 ses-04 ses-05 ; do
     if [[ -d ${raw_data_dir}/${subjName}/${ss} ]] ; then
 	cp -r $raw_data_dir/${subjName}/${ss}/anat $TMPDIR
 	chmod -R 740 $TMPDIR/anat
