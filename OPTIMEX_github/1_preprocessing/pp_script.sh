@@ -17,15 +17,15 @@ for ss in ses-01 ses-02 ses-03 ses-04 ses-05 ; do
 	mv $TMPDIR/anat/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-1_T2w.nii.gz $TMPDIR/$subjName
 	mv $TMPDIR/anat/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-2_T2w.nii.gz $TMPDIR/$subjName
 	mv $TMPDIR/anat/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-3_T2w.nii.gz $TMPDIR/$subjName
-	mv $TMPDIR/anat/${subjName}_${ss}_acq-mp2ragewip900075iso7TUNIDEN_run-1_T1w.nii.gz $TMPDIR/$subjName
+	mv $TMPDIR/anat/${subjName}_${ss}_acq-mp2ragewip*o7TUNIDEN_run-1_T1w.nii.gz $TMPDIR/$subjName
 	module load singularity/2.5.1
 	singularity="singularity exec --bind $TMPDIR:/TMPDIR --pwd /TMPDIR/ $data_dir/ants_fsl_robex_20180524.simg"
-	t1w=/TMPDIR/${subjName}/${subjName}_${ss}_acq-mp2ragewip900075iso7TUNIDEN_run-1_T1w.nii.gz
+	t1w=/TMPDIR/${subjName}/${subjName}_${ss}_acq-mp2ragewip*75iso7TUNIDEN_run-1_T1w.nii.gz
 	tse1=/TMPDIR/${subjName}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-1_T2w.nii.gz
 	tse2=/TMPDIR/${subjName}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-2_T2w.nii.gz
 	tse3=/TMPDIR/${subjName}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-3_T2w.nii.gz
 	simg_input_dir=/TMPDIR/${subjName}
-	if [[ ! -e $TMPDIR/${subjName}/${subjName}_${ss}_acq-mp2ragewip900075iso7TUNIDEN_run-1_T1w.nii.gz ]] ; then
+	if [[ ! -e $TMPDIR/${subjName}/${subjName}_${ss}_acq-mp2ragewip*75iso7TUNIDEN_run-1_T1w.nii.gz ]] ; then
 	    echo "Missing T1w for ${subjName}_${ss}" >> ${data_dir}/preprocessing_error_log.txt
 	fi
 	if [[ ! -e  $TMPDIR/${subjName}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-1_T2w.nii.gz  ]] ; then
@@ -46,19 +46,19 @@ for ss in ses-01 ses-02 ses-03 ses-04 ses-05 ; do
 	    #initial skull strip
 	    if [[ ! -e  ${data_dir}/${subjName}/${subjName}_${ss}_T1w_brainmask.nii.gz ]] ; then
 		echo "running robex for ${subjName}_${ss} T1w" 
-		$singularity runROBEX.sh $t1w ${simg_input_dir}/${subjName}_${ss}_T1w_brain_preproc.nii.gz ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz
+		$singularity runROBEX.sh ${simg_input_dir}/${subjName}_${ss}_acq-mp2ragewip*75iso7TUNIDEN_run-1_T1w.nii.gz ${simg_input_dir}/${subjName}_${ss}_T1w_brain_preproc.nii.gz ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz
             fi
 	    
 	    #bias correct t1
 	    if [[ ! -e  ${data_dir}/${subjName}/${subjName}_${ss}_T1w_N4corrected_norm_brain_preproc.nii.gz ]] ; then
 
 		echo "running N4 for T1w for ${subjName}_${ss} T1w" 
-		$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i $t1w -x ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_preproc.nii.gz --verbose 1 -s 2
+		$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i ${simg_input_dir}/${subjName}_${ss}_acq-mp2ragewip*75iso7TUNIDEN_run-1_T1w.nii.gz -x ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_preproc.nii.gz --verbose 1 -s 2
 		
 		
 		echo "re-running N4 for T1w for ${subjName}_${ss} T1w after resampling mask to whole image" 
-		$singularity antsApplyTransforms -d 3 -i ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r ${t1w} -n LanczosWindowedSinc -o ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz
-		$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i $t1w -x ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_preproc.nii.gz --verbose 1 -s 2
+		$singularity antsApplyTransforms -d 3 -i ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r ${simg_input_dir}/${subjName}_${ss}_acq-mp2ragewip*75iso7TUNIDEN_run-1_T1w.nii.gz -n LanczosWindowedSinc -o ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz
+		$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i ${simg_input_dir}/${subjName}_${ss}_acq-mp2ragewip*75iso7TUNIDEN_run-1_T1w.nii.gz  -x ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_preproc.nii.gz --verbose 1 -s 2
 		
 		#rescale t1
 		t1bc=${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_preproc.nii.gz
