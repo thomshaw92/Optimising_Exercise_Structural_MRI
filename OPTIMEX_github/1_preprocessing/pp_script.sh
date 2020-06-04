@@ -44,10 +44,9 @@ for ss in ses-01 ses-02 ses-03 ses-04 ses-05; do
 		if [[ ! -e ${data_dir}/${subjName}/${subjName}_${ss}_T1w_N4corrected_norm_brain_preproc.nii.gz ]]; then
 
 			#initial skull strip
-			if [[ ! -e ${data_dir}/${subjName}/${subjName}_${ss}_T1w_brainmask.nii.gz ]]; then
-				echo "running robex for ${subjName}_${ss} T1w"
-				$singularity runROBEX.sh ${simg_input_dir}/${subjName}_${ss}_acq-mp2rage-UNIDEN_run-1_T1w.nii.gz ${simg_input_dir}/${subjName}_${ss}_T1w_brain_preproc.nii.gz ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz
-			fi
+
+			echo "running robex for ${subjName}_${ss} T1w"
+			$singularity runROBEX.sh ${simg_input_dir}/${subjName}_${ss}_acq-mp2rage-UNIDEN_run-1_T1w.nii.gz ${simg_input_dir}/${subjName}_${ss}_T1w_brain_preproc.nii.gz ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz
 
 			#bias correct t1
 			if [[ ! -e ${data_dir}/${subjName}/${subjName}_${ss}_T1w_N4corrected_norm_brain_preproc.nii.gz ]]; then
@@ -83,28 +82,26 @@ for ss in ses-01 ses-02 ses-03 ses-04 ses-05; do
 			fi
 			#Bias correction - use mask created -
 			for x in "1" "2" "3"; do
-				if [[ ! -e ${data_dir}/${subjName}/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz ]]; then
-					echo "running TSE ${x} N4"
-					#N4
-					$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i ${simg_input_dir}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-${x}_T2w.nii.gz -x ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz --verbose 1 -s 2
-					if [[ ! -e $TMPDIR/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz ]]; then
-						echo "TSE run ${x} did not bias correct for ${subjName}_${ss}, trying without mask " >>${data_dir}/preprocessing_error_log.txt
-						$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i ${simg_input_dir}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-${x}_T2w.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz --verbose 1 -s 2
-					fi
-					#normalise intensities of the BC'd tses
-					$singularity ImageMath 3 ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz RescaleImage ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz 0 1000
 
-					#interpolation of TSEs -bring all into the same space while minimising interpolation write steps.
-					echo "running interpolation"
-					$singularity flirt -v -applyisoxfm 0.3 -interp sinc -sincwidth 8 -in ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz -ref ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz -out ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz
-
-					#create new brainmask and brain images.
-					echo "running ants apply transforms to create new brainmask of TSE ${x}"
-					$singularity antsApplyTransforms -d 3 -i ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz -n NearestNeighbor -o ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz
-					rm $TMPDIR/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz
+				echo "running TSE ${x} N4"
+				#N4
+				$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i ${simg_input_dir}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-${x}_T2w.nii.gz -x ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz --verbose 1 -s 2
+				if [[ ! -e $TMPDIR/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz ]]; then
+					echo "TSE run ${x} did not bias correct for ${subjName}_${ss}, trying without mask " >>${data_dir}/preprocessing_error_log.txt
+					$singularity N4BiasFieldCorrection -d 3 -b [1x1x1,3] -c '[50x50x40x30,0.00000001]' -i ${simg_input_dir}/${subjName}_${ss}_acq-tsehippoTraToLongaxis_run-${x}_T2w.nii.gz -r 1 -o ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz --verbose 1 -s 2
 				fi
-			done
-			for x in "1" "2" "3"; do
+				#normalise intensities of the BC'd tses
+				$singularity ImageMath 3 ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz RescaleImage ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_preproc.nii.gz 0 1000
+
+				#interpolation of TSEs -bring all into the same space while minimising interpolation write steps.
+				echo "running interpolation"
+				$singularity flirt -v -applyisoxfm 0.3 -interp sinc -sincwidth 8 -in ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz -ref ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz -out ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz
+
+				#create new brainmask and brain images.
+				echo "running ants apply transforms to create new brainmask of TSE ${x}"
+				$singularity antsApplyTransforms -d 3 -i ${simg_input_dir}/${subjName}_${ss}_T1w_brainmask.nii.gz -r ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz -n NearestNeighbor -o ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz
+				rm $TMPDIR/$subjName/${subjName}_${ss}_T2w_run-${x}_N4corrected_norm_preproc.nii.gz
+
 				#mask the preprocessed TSE.
 				echo "masking the pp'd TSE ${x}"
 				$singularity ImageMath 3 ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_brain_preproc.nii.gz m ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_res-iso.3_N4corrected_norm_preproc.nii.gz ${simg_input_dir}/${subjName}_${ss}_T2w_run-${x}_brainmask.nii.gz
@@ -141,16 +138,17 @@ for ss in ses-01 ses-02 ses-03 ses-04 ses-05; do
 					echo "${subjName}_${ss} T2w failed denoising" >>${data_dir}/preprocessing_error_log.txt
 				fi
 			fi
-			#Denoise the T1w scans (w/ and w/o skull)
-			$singularity DenoiseImage -d 3 -n Rician -i ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_brain_preproc.nii.gz -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_denoised_brain_preproc.nii.gz -v
-			$singularity DenoiseImage -d 3 -n Rician -i ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_denoised_preproc.nii.gz -v
-			#move back out of TMPDIR... need to delete all the crap (from RDS - the raw files are still included, need to sort this)
-			chmod -R 740 $TMPDIR/
-			#mkdir /RDS/Q0535/data/$subjName
-			rsync -rcv $TMPDIR/${subjName} ${data_dir}/
-			rm ${data_dir}/$subjName/*tsehippoTraToLongaxis_run-*.nii.gz
-			rm ${data_dir}/$subjName/*T1w.nii.gz
-			echo "done PP for $subjName_${ss}"
 		fi
+		#Denoise the T1w scans (w/ and w/o skull)
+		$singularity DenoiseImage -d 3 -n Rician -i ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_brain_preproc.nii.gz -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_denoised_brain_preproc.nii.gz -v
+		$singularity DenoiseImage -d 3 -n Rician -i ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_preproc.nii.gz -o ${simg_input_dir}/${subjName}_${ss}_T1w_N4corrected_norm_denoised_preproc.nii.gz -v
+		#move back out of TMPDIR... need to delete all the crap (from RDS - the raw files are still included, need to sort this)
+		chmod -R 740 $TMPDIR/
+		#mkdir /RDS/Q0535/data/$subjName
+		rsync -rcv $TMPDIR/${subjName} ${data_dir}/
+		rm ${data_dir}/$subjName/*tsehippoTraToLongaxis_run-*.nii.gz
+		rm ${data_dir}/$subjName/*T1w.nii.gz
+		echo "done PP for $subjName_${ss}"
+
 	fi
 done
