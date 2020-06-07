@@ -4,15 +4,11 @@
 #PBS -N lashis_2tp_optimex
 #PBS -V 
 #set -x
-source ~/.bashrc
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=12
 export NSLOTS=12
-export ASHS_ROOT=/90days/uqtshaw/ashs-fastashs_beta/bin/
-export ANTSPATH=/opt/ANTs/bin/
-export PATH=${ANTSPATH}:$PATH
 preprocessing_dir=/30days/uqtshaw/optimex/${SUBJNAME}
 
-#module load singularity
+module load singularity
 #where the data lives
 out_dir=/30days/uqtshaw/optimex/derivatives/LASHiS/${SUBJNAME}
 mkdir ${out_dir}
