@@ -18,10 +18,17 @@ mkdir ${out_dir}
 cd ${out_dir}
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 SUBJECTS_DIR=${out_dir}
-	       
-recon-all -subjid ${SUBJNAME}_ses-01 -all -i ${t1_dir}/_ses_ses-01_subject_${SUBJNAME}/_T1_histmatch_n0/normalised_MPRAGE_n.nii.gz -openmp 8 -3T -no-isrunning
-recon-all -subjid ${SUBJNAME}_ses-02 -all -i ${t1_dir}/_ses_ses-02_subject_${SUBJNAME}/_T1_histmatch_n0/normalised_MPRAGE_n.nii.gz -openmp 8 -3T -no-isrunning
 
+recon-all -autorecon1 -cm -s $subjName -i $t1w
+mri_convert $SUBJECTS_DIR/${subjName}/mri/brainmask.mgz $SUBJECTS_DIR/${subjName}/mri/brainmask_nii.nii.gz
+$singularity runROBEX.sh ${subjName}_${ss}_T1w.nii.gz ${subjName}_${ss}_T1w_brain_preproc.nii.gz ${subjName}_${ss}_T1w_brainmask.nii.gz
+$singularity flirt -searchrx -180 180 -searchry -180 180 -searchrz -180 -180 -in ${subjName}_${ss}_T1w_brain_preproc.nii.gz -ref $subjName/mri/brainmask_nii.nii.gz -out ${subjName}_t1_brainmask_robex.nii.gz
+mri_convert $TMPDIR/${subjName}_t1_brainmask_robex.nii.gz $SUBJECTS_DIR/${subjName}/mri/brainmask.mgz
+
+
+recon-all -subjid ${SUBJNAME}_ses-01 -autorecon1 -i  -openmp 8 
+
+recon-all -subjid ${SUBJNAME}_ses-02 -autorecon1 -i  -openmp 8 -
 #long proc
 #Base
 recon-all -base ${SUBJNAME} -tp ${SUBJNAME}_ses-01 -tp ${SUBJNAME}_ses-02 -all -no-isrunning
@@ -39,5 +46,3 @@ segmentHA_T2.sh ${SUBJNAME}_ses-02 ${t2_dir}/_ses_ses-02_subject_${SUBJNAME}/_T2
 
 #long HSF
 segmentHA_T1_long.sh ${SUBJNAME} $SUBJECTS_DIR
-
-rsync -cvr $SUBJECTS_DIR ${out_dir}
