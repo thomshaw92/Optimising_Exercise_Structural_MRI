@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -A UQ-CAI
-#PBS -l select=1:ncpus=16:mem=64GB:vmem=64GB,walltime=6:00:00
+#PBS -l select=1:ncpus=12:mem=24GB:vmem=24GB,walltime=6:00:00
 #PBS -N ashs_1tp_optimex
 #PBS -V 
 #set -x
@@ -10,8 +10,8 @@ export NSLOTS=12
 export ASHS_ROOT=/gpfs1/scratch/90days/uqtshaw/ashs-fastashs_beta
 preprocessing_dir=/30days/uqtshaw/optimex/${SUBJNAME}
 #where the data lives
-out_dir=/30days/uqtshaw/optimex/derivatives/LASHiS/${SUBJNAME}
-mkdir ${out_dir}
+out_dir=/30days/uqtshaw/optimex/derivatives/LASHiS/${SUBJNAME}/${SUBJNAME}
+mkdir -p ${out_dir}
 cd ${out_dir}
 #Do LASHiS 
 $ASHS_ROOT/bin/ashs_main.sh \

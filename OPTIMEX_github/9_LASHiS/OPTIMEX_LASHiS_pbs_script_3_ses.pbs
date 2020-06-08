@@ -13,8 +13,8 @@ export ASHS_ROOT=/gpfs1/scratch/90days/uqtshaw/ashs-fastashs_beta
 preprocessing_dir=/30days/uqtshaw/optimex/${SUBJNAME}
 #module load singularity
 #where the data lives
-out_dir=/30days/uqtshaw/optimex/derivatives/LASHiS/${SUBJNAME}
-mkdir ${out_dir}
+out_dir=/30days/uqtshaw/optimex/derivatives/LASHiS/${SUBJNAME}/${SUBJNAME}
+mkdir -p ${out_dir}
 cd ${out_dir}
 #Do LASHiS 
 /30days/uqtshaw/LASHiS/LASHiS.sh \
