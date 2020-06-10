@@ -1,5 +1,6 @@
 #!/bin/bash
 #untar entire directory
+#requires dicomsort from bidsCoin 
 
 base_dir="/30days/uqtshaw/optimex/raw_redos/final_checks"
 optimex_dir="/30days/uqtshaw/optimex/"

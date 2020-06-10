@@ -5,6 +5,7 @@ preprocessing_dir="/30days/uqtshaw/optimex"
 #ses-01 only
 
 for x in `cat ${github_dir}/subjnames_01_only.csv` ; do 
+echo ${x} >> 
 	if [[ ! -e ${preprocessing_dir}/${x}/${x}_ses-01_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz ]] ;  then
 		echo ${x} from ses-01_only missing ses-01 T2 nlinmoco
 	fi
