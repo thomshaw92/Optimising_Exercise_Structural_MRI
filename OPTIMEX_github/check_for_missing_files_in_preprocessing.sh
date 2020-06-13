@@ -1,6 +1,6 @@
 #!/bin/bash
 github_dir=~/scripts/Optimising_Exercise_Structural_MRI/OPTIMEX_github
-preprocessing_dir="/30days/uqtshaw/optimex"
+preprocessing_dir="/RDS/Q0535/data/derivatives/preprocessing"
 
 #ses-01 only
 
