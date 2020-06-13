@@ -17,7 +17,7 @@ out_dir=/30days/uqtshaw/optimex/derivatives/LASHiS/${SUBJNAME}/${SUBJNAME}
 mkdir -p ${out_dir}
 cd ${out_dir}
 #Do LASHiS 
-if [[ $SUBJNAME == "sub-1007MO"]] ; then
+if [[ ${SUBJNAME} == "sub-1007MO" ]] ; then
     /30days/uqtshaw/LASHiS/LASHiS.sh \
         -a /30days/uqtshaw/ashs_atlas_umcutrecht_7t_20170810/ \
         -c '2' \
