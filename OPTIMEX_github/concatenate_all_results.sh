@@ -8,7 +8,7 @@
 github_dir=~/scripts/Optimising_Exercise_Structural_MRI/OPTIMEX_github
 proc_lashis_dir="/30days/uqtshaw/optimex/derivatives/LASHiS"
 results_dir="/30days/uqtshaw/optimex/results"
-move_dir="/RDS/Q0535/data/derivatives/LASHiS"
+move_dir="/30days/uqtshaw/optimex_lashis_tar"
 
 mkdir ${results_dir}
 rm ${results_dir}/hippocampus_volumes.csv
@@ -22,8 +22,8 @@ for subjName in `cat ${github_dir}/subjnames_01_only.csv` ; do
         cat ${results_dir}/${subjName}/${subjName}*left*.txt>>${results_dir}/hippocampus_volumes.csv
         cat ${results_dir}/${subjName}/${subjName}*right*.txt>>${results_dir}/hippocampus_volumes.csv
         cd ${proc_lashis_dir}
-        echo "tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName}"
-    else
+        tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName} && rm -rf ./${subjName}
+        else
             echo "${subjName} missing 1 only" >> ${results_dir}/missing_data_LASHiS.txt
     fi
 done
@@ -60,7 +60,7 @@ for subjName in `cat ${github_dir}/subjnames_06_only.csv` ; do
         
         #move the directories
         cd ${proc_lashis_dir}
-        echo "tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName}"
+        tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName} && rm -rf ./${subjName}
     else 
         echo "${subjName} missing 02 only" >> ${results_dir}/missing_data_LASHiS.txt
     fi
@@ -106,7 +106,7 @@ for subjName in `cat ${github_dir}/subjnames_12_only.csv` ; do
         
         #move the directories
         cd ${proc_lashis_dir}
-        echo "tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName}"
+        tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName} && rm -rf ./${subjName}
     else 
         echo "${subjName} missing 03 only" >> ${results_dir}/missing_data_LASHiS.txt
     fi
@@ -161,7 +161,7 @@ for subjName in `cat ${github_dir}/subjnames_24_only.csv` ; do
         
         #move the directories
         cd ${proc_lashis_dir}
-        echo "tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName}"
+        tar -cvzf ${move_dir}/${subjName}.tar.gz ./${subjName} && rm -rf ./${subjName}
     else 
         echo "${subjName} missing 05 only" >> ${results_dir}/missing_data_LASHiS.txt
     fi
