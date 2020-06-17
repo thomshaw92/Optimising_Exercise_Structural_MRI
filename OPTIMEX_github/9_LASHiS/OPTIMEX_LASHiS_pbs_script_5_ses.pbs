@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -A UQ-CAI
-#PBS -l select=1:ncpus=16:mem=64GB:vmem=64GB,walltime=23:00:00
+#PBS -l select=1:ncpus=20:mem=64GB:vmem=64GB,walltime=23:00:00
 #PBS -N lashis_5tp_optimex
 #PBS -V
 #set -x
