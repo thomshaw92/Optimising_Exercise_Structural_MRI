@@ -12,5 +12,3 @@
 source ~/.bashrc 
 github_dir=~/scripts/Optimising_Exercise_Structural_MRI/OPTIMEX_github/
 ${github_dir}/1_preprocessing/pp_script.sh $SUBJNAME $TMPDIR
-
-  
