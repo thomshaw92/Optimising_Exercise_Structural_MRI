@@ -8,7 +8,7 @@ for subjName in `cat ${github_dir}/subjnames_06_only.csv` ; do
         qsub -v SUBJNAME=$subjName ${github_dir}/9_LASHiS/OPTIMEX_LASHiS_pbs_script_2_ses.pbs
 done
 for subjName in `cat ${github_dir}/subjnames_12_only.csv` ; do
-        qsub -v SUBJNAME=$subjName ${github_dir}/9_LASHiS/OPTIMEX_LASHiS_pbs_script_3_ses.pbs
+      qsub -v SUBJNAME=$subjName ${github_dir}/9_LASHiS/OPTIMEX_LASHiS_pbs_script_3_ses.pbs
 done
 for subjName in `cat ${github_dir}/subjnames_24_only.csv` ; do 
 	qsub -v SUBJNAME=$subjName ${github_dir}/9_LASHiS/OPTIMEX_LASHiS_pbs_script_5_ses.pbs
