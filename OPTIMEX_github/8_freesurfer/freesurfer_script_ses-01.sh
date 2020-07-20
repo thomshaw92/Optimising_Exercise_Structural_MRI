@@ -24,4 +24,4 @@ recon-all -autorecon2 -autorecon3 -cm -s $subjName
 #segmentHA_T2.sh $subjName $T2 T1T2 USE_T1 [$SUBJECTS_DIR]
 
 chmod -R 777 $TMPDIR
-rsync -v -c -r $TMPDIR/$subjName /90days/${USER}/optimex/freesurfer/
+rsync -v -r $TMPDIR/$subjName /90days/${USER}/optimex/freesurfer/

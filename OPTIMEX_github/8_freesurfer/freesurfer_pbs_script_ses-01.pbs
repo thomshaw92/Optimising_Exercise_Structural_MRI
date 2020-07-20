@@ -3,7 +3,7 @@
 
 #PBS -A UQ-CAI
 
-#PBS -l select=1:ncpus=4:mem=32GB:vmem=32GB,walltime=36:00:00
+#PBS -l select=1:ncpus=4:mem=12GB:vmem=12GB,walltime=36:00:00
 
 #PBS -V 
 
@@ -11,6 +11,4 @@
 
 source ~/.bashrc 
 
-~/scripts/OPTIMEX/8_freesurfer/freesurfer_script_ses-01.sh $SUBJNAME
-
-  
+~/scripts/Optimising_Exercise_Structural_MRI/OPTIMEX_github/8_freesurfer/freesurfer_script_ses-01.sh $SUBJNAME
