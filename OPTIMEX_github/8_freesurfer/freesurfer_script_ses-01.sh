@@ -1,7 +1,7 @@
 #!/bin/bash
 #Thomas Shaw 24/9/18
 #Freesurfer script for HPC - only for TP1 for ETIV measurement.
-subjName=sub-1001DS
+subjName=$1
 source ~/.bashrc
 module load singularity
 ss="ses-01"
@@ -16,11 +16,11 @@ t1w=/30days/uqtshaw/optimex/bids/${subjName}/ses-01/anat/${subjName}*${ss}_T1w.n
 module load freesurfer/6.1dev
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 SUBJECTS_DIR=$TMPDIR
-recon-all -autorecon1 -cm -s $subjName -i $TMPDIR/${subjName}_t1w.nii.gz
+recon-all -autorecon1 -nofix -cm -s $subjName -i $TMPDIR/${subjName}_t1w.nii.gz
 mri_convert $SUBJECTS_DIR/${subjName}/mri/brainmask.mgz $SUBJECTS_DIR/${subjName}/mri/brainmask_nii.nii.gz
 $singularity runROBEX.sh /TMPDIR/${subjName}/mri/brainmask_nii.nii.gz /TMPDIR/${subjName}/mri/brain_robex.nii.gz /TMPDIR/${subjName}/mri/brainmask_robex.nii.gz
 mri_convert $SUBJECTS_DIR/${subjName}/mri/brain_robex.nii.gz $SUBJECTS_DIR/${subjName}/mri/brainmask.mgz
-recon-all -autorecon2 -autorecon3 -cm -s $subjName
+recon-all -autorecon2 -autorecon3 -nofix -cm -s $subjName
 #segmentHA_T2.sh $subjName $T2 T1T2 USE_T1 [$SUBJECTS_DIR]
 
 chmod -R 777 $TMPDIR
