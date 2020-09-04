@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -N pp_pbs_script
+
+#PBS -A UQ-CAI
+
+#PBS -l select=1:ncpus=12:mem=62GB:vmem=62GB,walltime=24:00:00
+
+#PBS -V 
+
+#Now do some things
+
+source ~/.bashrc 
+github_dir=~/scripts/Optimising_Exercise_Structural_MRI/OPTIMEX_github/
+${github_dir}/4_ACT/antsCT_script.sh $SUBJNAME 
