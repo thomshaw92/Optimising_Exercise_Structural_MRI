@@ -1,7 +1,6 @@
 #!/bin/bash
-#Thomas Shaw 5/4/18
-#and still working on it 18/5/2020
-#skull strip t1/tse, bias correct, normalise, interpolate, then nlinMoco, and denoise
+#Thomas Shaw 4/9/2020
+#ants cortical thickness for ICV calc. should include something for adding up volumes? 
 subjName=$1
 source ~/.bashrc
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=12

@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N pp_pbs_script
+#PBS -N optimex_ANTSCT_script
 
 #PBS -A UQ-CAI
 
