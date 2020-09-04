@@ -12,9 +12,9 @@ results_dir="/30days/uqtshaw/optimex/results"
 move_dir="/30days/uqtshaw/optimex_lashis_tar"
 
 mkdir ${results_dir}
-rm ${results_dir}/hippocampus_volumes.csv
-rm ${results_dir}/missing_data_LASHiS.txt
-rm ${results_dir}/ASHS_hippocampus_volumes.csv
+#rm ${results_dir}/hippocampus_volumes.csv
+#rm ${results_dir}/missing_data_LASHiS.txt
+#rm ${results_dir}/ASHS_hippocampus_volumes.csv
 #ses-01 only
 for subjName in `cat ${github_dir}/subjnames_01_only.csv` ; do
     mkdir ${results_dir}/${subjName}

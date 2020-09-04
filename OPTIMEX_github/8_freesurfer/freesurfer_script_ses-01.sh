@@ -10,8 +10,8 @@ singularity="singularity exec --bind $TMPDIR:/TMPDIR --pwd /TMPDIR/ /30days/$USE
 #rsync -r -v /RDS/Q0535/optimex/data/derivatives/preprocessing/$subjName/${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_norm_brain_preproc.nii.gz $TMPDIR/
 cd $TMPDIR
 chmod -R 740 $TMPDIR/
-cp /30days/uqtshaw/optimex/bids/${subjName}/ses-01/anat/${subjName}_${ss}*run-1_T1w.nii.gz $TMPDIR/${subjName}_t1w.nii.gz
-t1w=/30days/uqtshaw/optimex/bids/${subjName}/ses-01/anat/${subjName}*${ss}_T1w.nii.gz
+cp /30days/uqtshaw/optimex/bids/${subjName}/${ss}/anat/${subjName}_${ss}*run-1_T1w.nii.gz $TMPDIR/${subjName}_t1w.nii.gz
+t1w=/30days/uqtshaw/optimex/bids/${subjName}/${ss}/anat/${subjName}*${ss}_T1w.nii.gz
 #T2=$TMPDIR/${subjName}_${ss}_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_norm_brain_preproc.nii.gz
 module load freesurfer/6.1dev
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
