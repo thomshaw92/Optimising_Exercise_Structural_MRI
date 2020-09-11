@@ -61,7 +61,7 @@ wf.connect([(infosource, selectfiles, [('subject', 'subject')])])
 ############
 # SPM segment
 
-seg = spm.NewSegment()
+#seg = spm.NewSegment()
 #input_image not input
 T1_segment_n = MapNode(seg(channel_info = (0.0001, 60, (True, True)),
                                       name = 'T1_seg_n', iterfield=['input_image']))
